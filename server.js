@@ -54,9 +54,6 @@ if (!PRIVATE_KEY.includes('BEGIN PRIVATE KEY') || !PRIVATE_KEY.includes('END PRI
   logger.info('Private Key appears to be correctly formatted.');
 }
 
-// Log a sanitized version of the private key (for debugging)
-logger.info('Sanitized Private Key:', { key: PRIVATE_KEY.replace(/[^-]/g, '*').slice(0, 50) });
-
 // Initialize Google Sheets Client
 const sheets = google.sheets('v4');
 const SPREADSHEET_ID = '14Fu1TT9XgHe63IMewEII6okuyHXL0d7o6DzZfnqmxhs';
@@ -80,7 +77,7 @@ app.post('/login', async (req, res) => {
     const response = await sheets.spreadsheets.values.get({
       auth,
       spreadsheetId: SPREADSHEET_ID,
-      range: 'Sheet1!A:C',
+      range: 'Sheet1!A:I', // Updated range to include all required columns
     });
 
     const rows = response.data.values;
@@ -91,14 +88,27 @@ app.post('/login', async (req, res) => {
       return res.status(404).json({ status: 'fail', message: 'No data found in the spreadsheet' });
     }
 
-    // Check if user exists in the rows
+    // Find user row
     const user = rows.find((row) => row[0] === username && row[2] === phone);
     if (user) {
       logger.info('User authenticated successfully', { username, phone });
-      res.json({ status: 'success', message: 'Login successful!' });
+
+      // Return user details
+      return res.json({
+        status: 'success',
+        message: 'Login successful!',
+        data: {
+          username: user[0],  // Column A
+          email: user[1],     // Column B
+          phone: user[2],     // Column C
+          joinDate: user[3],  // Column D
+          manager: user[7],   // Column H
+          earnings: user[8],  // Column I
+        },
+      });
     } else {
       logger.warn('Authentication failed', { username, phone });
-      res.status(401).json({ status: 'fail', message: 'Invalid username or phone number' });
+      return res.status(401).json({ status: 'fail', message: 'Invalid username or phone number' });
     }
   } catch (error) {
     logger.error('Error during login process', { error: error.message, stack: error.stack });
