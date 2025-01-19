@@ -4,13 +4,20 @@
   "description": "Node.js project for Google Sheets API integration",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",                      // Start the server normally
+    "start:debug": "node --inspect server.js",      // Start the server in debug mode
+    "start:dev": "nodemon server.js"               // Start the server with auto-restart (nodemon)
   },
   "dependencies": {
     "express": "^4.18.2",
     "body-parser": "^1.20.2",
     "googleapis": "^105.0.0",
     "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20",                          // For auto-restarting the server during development
+    "winston": "^3.8.2",                           // For structured logging
+    "morgan": "^1.10.0"                            // For HTTP request logging
   },
   "author": "",
   "license": "ISC"
