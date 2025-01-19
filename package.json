@@ -1,5 +1,5 @@
 {
-  "name": "node-google-sheets",
+  "name": "favorited-iview",
   "version": "1.0.0",
   "description": "Node.js project for Google Sheets API integration",
   "main": "server.js",
