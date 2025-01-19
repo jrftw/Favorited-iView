@@ -1,11 +1,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { google } = require('googleapis');
-const fs = require('fs');
-const path = require('path');
+const cors = require('cors'); // Add CORS middleware
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Use CORS middleware to allow requests from your WordPress domain
+app.use(cors({
+  origin: 'https://infinitumlive.com', // Replace with your WordPress domain
+}));
 
 app.use(bodyParser.json());
 
@@ -39,11 +43,11 @@ app.post('/login', async (req, res) => {
     if (user) {
       res.json({ status: 'success', message: 'Login successful!' });
     } else {
-      res.status(401).json({ status: 'fail', message: 'Invalid username or phone number' });
+      res.status(401).json({ status: 'fail', message: 'Invalid username or phone number.' });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ status: 'error', message: 'Server error' });
+    res.status(500).json({ status: 'error', message: 'Server error.' });
   }
 });
 
