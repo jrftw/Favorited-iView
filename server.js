@@ -46,6 +46,18 @@ try {
 const CLIENT_EMAIL = serviceAccount.client_email;
 const PRIVATE_KEY = serviceAccount.private_key;
 
+// Validate Private Key Format
+if (!PRIVATE_KEY.includes('BEGIN PRIVATE KEY') || !PRIVATE_KEY.includes('END PRIVATE KEY')) {
+  logger.error('Invalid private key detected. Please check the SERVICE_ACCOUNT_JSON.');
+  process.exit(1);
+} else {
+  logger.info('Private Key appears to be correctly formatted.');
+}
+
+// Log a sanitized version of the private key (for debugging)
+logger.info('Sanitized Private Key:', { key: PRIVATE_KEY.replace(/[^-]/g, '*').slice(0, 50) });
+
+// Initialize Google Sheets Client
 const sheets = google.sheets('v4');
 const SPREADSHEET_ID = '14Fu1TT9XgHe63IMewEII6okuyHXL0d7o6DzZfnqmxhs';
 
@@ -89,7 +101,7 @@ app.post('/login', async (req, res) => {
       res.status(401).json({ status: 'fail', message: 'Invalid username or phone number' });
     }
   } catch (error) {
-    logger.error('Error during login process', { error: error.message });
+    logger.error('Error during login process', { error: error.message, stack: error.stack });
     res.status(500).json({ status: 'error', message: 'Internal server error' });
   }
 });
